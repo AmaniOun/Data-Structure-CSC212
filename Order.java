@@ -75,76 +75,34 @@ public class Order {
     public void setStatus(String status) {
         this.status = status;
     }
-
-
-    // Create Order
-    // Creates a new order by inserting it into the list
-    public static void createOrder(LinkedList<Order> list, Order order) {
-        list.insert(order);
+    
+    public void addProduct (Integer product )
+    {
+        products.insert(product);
     }
-
-    // Cancel Order
-    // Removes the order if found in the list
-    public static boolean cancelOrder(LinkedList<Order> list, int id) {
-        if (list.empty()) return false;
-
-        list.findFirst();
-        while (!list.last()) {
-            if (list.retrieve().getOrderId() == id) {
-                list.remove();
+    
+     public boolean removeProduct( Integer P)
+    {
+        if ( ! products.empty())
+        {
+            products.findFirst();
+            while(! products.last())
+            {
+                if (products.retrieve() == P)
+                {
+                    products.remove();
+                    return true;
+                }
+                else
+                    products.findNext();
+            }
+            if (products.retrieve() == P)
+            {
+                products.remove();
                 return true;
             }
-            list.findNext();
         }
-
-        if (list.retrieve().getOrderId() == id) {
-            list.remove();
-            return true;
-        }
-
         return false;
-    }
-
-    // Update Order Status
-    // Finds the order by ID and updates its status
-    public static boolean updateStatus(LinkedList<Order> list, int id, String newStatus) {
-        if (list.empty()) return false;
-
-        list.findFirst();
-        while (!list.last()) {
-            if (list.retrieve().getOrderId() == id) {
-                list.retrieve().setStatus(newStatus);
-                return true;
-            }
-            list.findNext();
-        }
-
-        if (list.retrieve().getOrderId() == id) {
-            list.retrieve().setStatus(newStatus);
-            return true;
-        }
-
-        return false;
-    }
-
-    // Search Order by ID
-    // Returns the order if found, otherwise returns null
-    public static Order searchById(LinkedList<Order> list, int id) {
-        if (list.empty()) return null;
-
-        list.findFirst();
-        while (!list.last()) {
-            if (list.retrieve().getOrderId() == id) {
-                return list.retrieve();
-            }
-            list.findNext();
-        }
-
-        if (list.retrieve().getOrderId() == id) {
-            return list.retrieve();
-        }
-
-        return null;
     }
 
     public String toString() {
