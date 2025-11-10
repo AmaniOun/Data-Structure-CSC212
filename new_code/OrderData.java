@@ -20,7 +20,7 @@ public class OrderData {
             
             if (!file.exists()) {
                 System.out.println("File NOT found: " + fileName);
-                System.out.println("Please put the file in: (\"user.dir\")");
+                System.out.println("Please put the file in: " + System.getProperty("user.dir"));
                 return;
             }
             
@@ -149,27 +149,40 @@ public class OrderData {
         return null;
     }
 
-    // Returns orders that fall between two given dates 
     public LinkedList<Order> getOrdersBetween(String start, String end) {
         LinkedList<Order> result = new LinkedList<>();
 
-        if (orders.empty()) return result;
-
-        orders.findFirst();
-        while (true) {
-            Order current = orders.retrieve();
-
-            // Add order if its date is within the range
-            if (current.getOrderDate().compareTo(start) >= 0 &&
-                current.getOrderDate().compareTo(end) <= 0) 
-            {
-                result.insert(current);
-            }
-
-            if (orders.last()) break;
-            orders.findNext();
+        if (orders.empty()) {
+            System.out.println("No orders in system.");
+            return result;
         }
 
+        System.out.println("\n Searching for orders between: " + start + " and " + end);
+        int foundCount = 0;
+
+        orders.findFirst();
+        for (int i = 0; i < orders.size(); i++) {
+            Order current = orders.retrieve();
+            
+
+            if (current.getOrderDate().compareTo(start) >= 0 &&
+                current.getOrderDate().compareTo(end) <= 0) {
+                
+                if (result.empty()) {
+                    result.insert(current);
+                } else {
+                    result.findFirst();
+                    result.insert(current);
+                }
+                
+                foundCount++;
+            }
+
+            if (!orders.last())
+                orders.findNext();
+        }
+
+        System.out.println("\n Total orders found: " + foundCount);
         return result;
     }
 

@@ -205,17 +205,48 @@ public class InventoryAndOrderSystem {
             }
             break;
             
-            case 5:
-            {
-                System.out.println("Enter first date (dd/MM/yyyy)");
-                String date1 = input.next();
-                
-                System.out.println("Enter second date (dd/MM/yyyy)");
-                String date2 = input.next();
-                
-                odata.getOrdersBetween(date1, date2);
+case 5:
+{
+    System.out.println("\n=== Search Orders by Date Range ===");
+    System.out.println("Enter first date(dd/MM/yyyy):");
+    String date1Input = input.next();
+    
+    System.out.println("Enter second date (dd/MM/yyyy):");
+    String date2Input = input.next();
+    
+    try {
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        LocalDate d1 = LocalDate.parse(date1Input, inputFormat);
+        LocalDate d2 = LocalDate.parse(date2Input, inputFormat);
+        
+        String date1 = d1.format(outputFormat);
+        String date2 = d2.format(outputFormat);
+        
+      
+        LinkedList<Order> result = odata.getOrdersBetween(date1, date2);
+        
+        if (result.empty()) {
+            System.out.println("\n No orders found between " + date1 + " and " + date2);
+        } else {
+            System.out.println("\n " + result.size() + " orders Found: ");
+            System.out.println("=====================================");
+            
+            result.findFirst();
+            for (int i = 0; i < result.size(); i++) {
+                System.out.println((i+1) + ". " + result.retrieve());
+                if (!result.last())
+                    result.findNext();
             }
-            break;
+            System.out.println("=====================================");
+        }
+    } catch (Exception e) {
+        System.out.println("❌ Invalid date format! Please use dd/MM/yyyy");
+        System.out.println("Error: " + e.getMessage());
+    }
+}
+break;
             case 6:
                 break;
 
@@ -299,107 +330,116 @@ public class InventoryAndOrderSystem {
                 + " by customer (" + review.getCustomer() +"), Rate(" + review.getRating() + ") with comment: " + review.getComment() +"." );
     }
     
-    //place an order
     public static void PlaceOrder()
-    {
-            Order new_order = new Order ();
-            int total_price = 0;
-            
-            System.out.println("Enter order ID: ");
-            int oid = input.nextInt();
-            while (odata.checkOrderID(oid))
-            {
-                System.out.println("order id is available!  \n Enter Order ID again:");
-                oid = input.nextInt();
-            }
-            new_order.setOrderId(oid);
-            
-            System.out.println("Enter customer ID:");
-            int cid = input.nextInt();
-            while(! cdata.customerExists(cid))
-            {
-                System.out.println("customer ID is not available! \n Enter customer ID again:");
-                cid = input.nextInt();
-            }
-            new_order.setCustomerRef(cid);
-            
-            char answer = 'y';
-            while (answer == 'y' || answer == 'Y')
-            {
-                System.out.println("Enter product ID:");
-                int pid = input.nextInt();
-               
-                boolean found = false;
-                
-                products.findFirst();
-for ( int i = 0 ;  i < products.size() ;i++)
 {
-    if (products.retrieve().getProductId() == pid)
-    {
-        if (products.retrieve().getStock() == 0)
-            System.out.println("product out stock , try another time");
-        else
+        Order new_order = new Order ();
+        int total_price = 0;
+        
+        System.out.println("Enter order ID: ");
+        int oid = input.nextInt();
+        while (odata.checkOrderID(oid))
         {
-            products.retrieve().setStock(products.retrieve().getStock() - 1);
-            System.out.println("product added to order");
-            found = true;
-            
-            new_order.addProduct(products.retrieve().getProductId());
-            total_price += products.retrieve().getProductPrice();
+            System.out.println("order id is available!  \n Enter Order ID again:");
+            oid = input.nextInt();
         }
-        break;
-    }
-    products.findNext();
-}
-                
-
-                if (!found)
-                        System.out.println("  No such product id");
-                    
-                
-                System.out.println("Do you want to continue adding product? (Y/N)");
-                answer = input.next().charAt(0);
-            }
-            
-            new_order.setTotalPrice(total_price);
-            System.out.println("Enter first date (dd/MM/yyyy)");
-            String orderDate = input.next();
-
-            // Validate the format
-          try {
-              DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-              LocalDate.parse(orderDate, formatter); //  to validate
-              new_order.setOrderDate(orderDate); 
-              } catch (Exception e) {
-             System.out.println("Invalid date format!");
-               orderDate = input.next();
-
-            }
-          
-     
-            System.out.println("Enter new status  (pending, shipped, delivered, cancelled)....");
-            new_order.setStatus(input.next());
-            
-            orders.insert(new_order);
-            
-            // add order to customer list
-            customers.findFirst();
-            for(int i = 0 ; i < customers.size(); i++)
+        new_order.setOrderId(oid);
+        
+        System.out.println("Enter customer ID:");
+        int cid = input.nextInt();
+        while(! cdata.customerExists(cid))
+        {
+            System.out.println("customer ID is not available! \n Enter customer ID again:");
+            cid = input.nextInt();
+        }
+        new_order.setCustomerRef(cid);
+        
+        char answer = 'y';
+        while (answer == 'y' || answer == 'Y')
+        {
+            System.out.println("Enter product ID:");
+            int pid = input.nextInt();
+           
+            // FIXED: Validate product ID exists before proceeding
+            while (!pdata.checkProductID(pid))
             {
-                if (customers.retrieve().getCustomerId() == new_order.getCustomerRef())
+                System.out.println("Product ID not found! \n Enter product ID again:");
+                pid = input.nextInt();
+            }
+            
+            boolean found = false;
+            
+            products.findFirst();
+            for ( int i = 0 ;  i < products.size() ;i++)
+            {
+                if (products.retrieve().getProductId() == pid)
                 {
-                    Customer cust = customers.retrieve();
-                    customers.remove();
-                    cust.addOrder(oid);
-                    customers.insert(cust);
+                    if (products.retrieve().getStock() == 0)
+                        System.out.println("product out stock , try another time");
+                    else
+                    {
+                        products.retrieve().setStock(products.retrieve().getStock() - 1);
+                        System.out.println("product added to order");
+                        found = true;
+                        
+                        new_order.addProduct(products.retrieve().getProductId());
+                        total_price += products.retrieve().getProductPrice();
+                    }
                     break;
                 }
-                customers.findNext();
-            }   
+                // FIXED: Only call findNext if not at the last element
+                if (!products.last())
+                    products.findNext();
+            }
             
-            System.out.println("Order had been added ");
-            System.out.println(orders.retrieve());
-    }
+            System.out.println("Do you want to continue adding product? (Y/N)");
+            answer = input.next().charAt(0);
+        }
+        
+        new_order.setTotalPrice(total_price);
+        
+        // FIXED: Convert date format from dd/MM/yyyy to yyyy-MM-dd for proper comparison
+        System.out.println("Enter order date (dd/MM/yyyy):");
+        String orderDateInput = input.next();
+
+        try {
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            
+            LocalDate date = LocalDate.parse(orderDateInput, inputFormatter);
+            String formattedDate = date.format(outputFormatter);
+            
+            new_order.setOrderDate(formattedDate); // Store in yyyy-MM-dd format
+            System.out.println("Order date set to: " + formattedDate);
+        } catch (Exception e) {
+            System.out.println("Invalid date format! Using today's date.");
+            LocalDate today = LocalDate.now();
+            new_order.setOrderDate(today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        }
+      
+        System.out.println("Enter status (pending, shipped, delivered, cancelled)....");
+        new_order.setStatus(input.next());
+        
+        orders.insert(new_order);
+        
+        // add order to customer list
+        customers.findFirst();
+        for(int i = 0 ; i < customers.size(); i++)
+        {
+            if (customers.retrieve().getCustomerId() == new_order.getCustomerRef())
+            {
+                Customer cust = customers.retrieve();
+                customers.remove();
+                cust.addOrder(oid);
+                customers.insert(cust);
+                break;
+            }
+            if (!customers.last())
+                customers.findNext();
+        }   
+        
+        System.out.println("Order has been added successfully!");
+        System.out.println(orders.retrieve());
+}
     
     //=================================================================
     public static void CancelOrder()
