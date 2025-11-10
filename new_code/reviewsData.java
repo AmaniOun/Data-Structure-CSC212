@@ -155,4 +155,30 @@ public class reviewsData {
         }
         return false;
     }
+    
+    public LinkedList<Review> getReviewsByCustomer(int customerId) {
+   
+    LinkedList<Review> customerReviews = new LinkedList<>();
+    
+    if (reviews.empty()) {
+        return customerReviews;
+    }
+    
+    reviews.findFirst();
+    for (int i = 0; i < reviews.size(); i++) {
+        if (reviews.retrieve().getCustomer() == customerId) {
+            if (customerReviews.empty()) {
+                customerReviews.insert(reviews.retrieve());
+            } else {
+                customerReviews.findFirst();
+                customerReviews.insert(reviews.retrieve());
+            }
+        }
+        
+        if (!reviews.last())
+            reviews.findNext();
+    }
+    
+    return customerReviews;
+}
 }

@@ -135,7 +135,7 @@ public class InventoryAndOrderSystem {
         int choice;
         System.out.println("1. Register new customer");
         System.out.println("2. Place New Order for specific customer");
-        System.out.println("3. View Order history  for specific customer");
+        System.out.println("3. View Order history for specific customer");
         System.out.println("4. Return Main menu");
         System.out.println("Enter your choice");
         choice = input.nextInt();;
@@ -163,7 +163,7 @@ public class InventoryAndOrderSystem {
         int choice;
         System.out.println("1. Place New Order");
         System.out.println("2. Cancel Order");
-        System.out.println("3. Update Order (Status)");
+        System.out.println("3. Update Order Status");
         System.out.println("4. Search By ID");
         System.out.println("5. All orders between two dates");
         System.out.println("6. Return Main menu");
@@ -242,7 +242,7 @@ case 5:
             System.out.println("=====================================");
         }
     } catch (Exception e) {
-        System.out.println("❌ Invalid date format! Please use dd/MM/yyyy");
+        System.out.println("Invalid date format! Please use dd/MM/yyyy");
         System.out.println("Error: " + e.getMessage());
     }
 }
@@ -261,9 +261,10 @@ break;
         System.out.println("1. Add review");
         System.out.println("2. Edit review");
         System.out.println("3. Get an average rating for product");
-        System.out.println("4. Top 3 products");
-        System.out.println("5. Common products with an average rating 4 and more between 2 cusomers");
-        System.out.println("6. Return Main menu");
+        System.out.println("4. Extract reviews for a specific customer");
+        System.out.println("5. Top 3 products");
+        System.out.println("6. Common products with an average rating 4 out of 5 between 2 Customers");
+        System.out.println("7. Return Main menu");
         System.out.println("Enter your choice");
         int choice = input.nextInt();;
         switch (choice)
@@ -288,17 +289,21 @@ break;
                 System.out.println("Average Rating for " + pid + " is " + AVG);
             }
             break;
-            case 4:
+             case 4:
+                extractCustomerReviews();
+                break;
+                
+            case 5:
                 top3Products();
                 break;
-            case 5:
+            case 6:
             {
                 Customer cid1 =cdata.findCustomerById();
                 Customer cid2 =cdata.findCustomerById();
                 commonProducts(cid1.getCustomerId(), cid2.getCustomerId());
             }
             break;
-            case 6:
+            case 7:
                 break;
             default:
                 System.out.println("Return to Main Menu");
@@ -512,6 +517,41 @@ break;
         
         return (rate/counter);
     }
+    
+    //Extract reviews from a specific customer for all products
+    public static void extractCustomerReviews() {
+    System.out.print("Enter Customer ID to extract reviews: ");
+    int customerId = input.nextInt();
+    
+    while (!cdata.customerExists(customerId)) {
+        System.out.println("Customer ID not found! \nEnter Customer ID again: ");
+        customerId = input.nextInt();
+    }
+    
+    LinkedList<Review> customerReviews = rdata.getReviewsByCustomer(customerId);
+    
+    if (customerReviews.empty()) {
+        System.out.println("No reviews found for customer " + customerId);
+    } else {
+        System.out.println("\n=== Reviews by Customer " + customerId + " ===");
+        System.out.println("Total reviews: " + customerReviews.size());
+        System.out.println("=====================================");
+        
+        customerReviews.findFirst();
+        for (int i = 0; i < customerReviews.size(); i++) {
+            Review r = customerReviews.retrieve();
+            System.out.println("\nReview #" + (i + 1));
+            System.out.println("  Review ID: " + r.getReviewId());
+            System.out.println("  Product ID: " + r.getProduct());
+            System.out.println("  Rating: " + r.getRating() + "/5");
+            System.out.println("  Comment: " + r.getComment());
+            
+            if (!customerReviews.last())
+                customerReviews.findNext();
+        }
+        System.out.println("=====================================");
+    }
+}
 
     //top 3 products
     public static void top3Products()
