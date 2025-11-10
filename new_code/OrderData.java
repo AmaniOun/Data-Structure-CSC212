@@ -20,7 +20,7 @@ public class OrderData {
             
             if (!file.exists()) {
                 System.out.println("File NOT found: " + fileName);
-                System.out.println("Please put the file in: " + System.getProperty("user.dir"));
+                System.out.println("Please put the file in: (\"user.dir\")" );
                 return;
             }
             
