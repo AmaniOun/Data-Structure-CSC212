@@ -2,11 +2,11 @@ package project;
 
 
 public class Product {
-    int productId;
-    String name;
-    double price;
-    int stock;
-    LinkedList <Integer> reviews = new LinkedList <Integer> ();
+    private int productId;
+    private String name;
+    private double price;
+    private int stock;
+    private LinkedList <Integer> reviews = new LinkedList <Integer> ();
 
     public Product() {
         this.productId = 0;
