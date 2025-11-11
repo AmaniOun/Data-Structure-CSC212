@@ -1,12 +1,12 @@
 package project;
 
 public class Order {
-    int orderId;
-    int customerRef;
-    LinkedList<Integer> products = new LinkedList <Integer> ();
-    double totalPrice;
-    String orderDate; 
-    String status;
+    private int orderId;
+    private int customerRef;
+    private LinkedList<Integer> products = new LinkedList <Integer> ();
+    private double totalPrice;
+    private String orderDate; 
+    private String status;
     
     public Order() {
         this.orderId = 0;
