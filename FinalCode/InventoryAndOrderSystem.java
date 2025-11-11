@@ -1,5 +1,5 @@
 
-package com.mycompany.final_code;
+package project;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -752,7 +752,7 @@ public static void AddNewReview()
             {
                 
                 Product p = products.retrieve();
-                float AVGrating = AVG_Rating (p.productId);
+                float AVGrating = AVG_Rating (p.getProductId());
                 top3.enqueue(p, AVGrating);
                 
                 products.findNext();
@@ -862,7 +862,7 @@ public static void AddNewReview()
                 while (AVGrate45.length() > 0)
                 {
                     PQ_Element<Product> product_rate = AVGrate45.serve();
-                    System.out.println(" Product (" + product_rate.data.productId + ") " + product_rate.data.getProductName() + " with rate " + product_rate.priority );
+                    System.out.println(" Product (" + product_rate.data.getProductId() + ") " + product_rate.data.getProductName() + " with rate " + product_rate.priority );
                     System.out.println(product_rate.data);
                     System.out.println("\n");
                 }
