@@ -1,4 +1,4 @@
-package project;
+package com.mycompany.final_code;
 
 import java.io.File;
 import java.util.Scanner;
@@ -116,21 +116,22 @@ public class ProductData {
         
         
     public Product removeProduct() {
-        try {
+    try {
         if (products.empty()) {
             System.out.println("The product list is currently empty");
             return null;
         }
         
-        System.out.println("Enter the product ID to remove:  ");
+        System.out.println("Enter the product ID to remove: ");
         int productID = input.nextInt();
         
         products.findFirst();
         for (int i = 0; i < products.size(); i++) {
             if (products.retrieve().getProductId() == productID) {
-                products.retrieve().setStock(0);
-                System.out.println("Product stock set to 0");
-                return products.retrieve();
+                Product removedProduct = products.retrieve();
+                products.remove(); 
+                System.out.println("Product " + productID + " has been successfully removed from the system");
+                return removedProduct;
             }
             if (!products.last())
                 products.findNext();
@@ -139,11 +140,12 @@ public class ProductData {
         System.out.println("Product not found in the system");
         return null;
     } catch (Exception e) {
-        System.out.println(" Invalid input, please try again.");
+        System.out.println("Invalid input, please try again.");
         input.nextLine();
         return null;
     }
 }
+    
     public Product updateProduct() {
          try {
         if (products.empty()) {

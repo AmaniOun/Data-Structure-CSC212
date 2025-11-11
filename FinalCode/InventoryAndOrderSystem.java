@@ -1,5 +1,5 @@
 
-package project;
+package com.mycompany.final_code;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class InventoryAndOrderSystem {
-    
     public static Scanner input = new Scanner (System.in);
 
 
@@ -111,7 +110,7 @@ public class InventoryAndOrderSystem {
             System.out.println("3. Update product");
             System.out.println("4. Search By ID ");
             System.out.println("5. Search products by name");
-            System.out.println("6. Track all Out - stock products");
+            System.out.println("6. Track all Out of stock products");
             System.out.println("7. Return Main Menu");
             System.out.print("Enter your choice: ");
 
@@ -130,7 +129,6 @@ public class InventoryAndOrderSystem {
                 pdata.addProduct();
             break;
         case 2:
-            System.out.println("No product can be removed, just stock will be ZERO");
             pdata.removeProduct();
             break;
         case 3:
@@ -532,7 +530,7 @@ public static void AddNewReview()
             System.out.println("Enter product ID:");
             int pid = input.nextInt();
            
-            // FIXED: Validate product ID exists before proceeding
+
             while (!pdata.checkProductID(pid))
             {
                 System.out.println("Product ID not found! \n Enter product ID again:");
@@ -559,7 +557,7 @@ public static void AddNewReview()
                     }
                     break;
                 }
-                // FIXED: Only call findNext if not at the last element
+
                 if (!products.last())
                     products.findNext();
             }
@@ -570,23 +568,27 @@ public static void AddNewReview()
         
         new_order.setTotalPrice(total_price);
         
-        // FIXED: Convert date format from dd/MM/yyyy to yyyy-MM-dd for proper comparison
-        System.out.println("Enter order date (dd/MM/yyyy):");
-        String orderDateInput = input.next();
-
-        try {
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-            LocalDate date = LocalDate.parse(orderDateInput, inputFormatter);
-            String formattedDate = date.format(outputFormatter);
-            
-            new_order.setOrderDate(formattedDate); // Store in yyyy-MM-dd format
-            System.out.println("Order date set to: " + formattedDate);
-        } catch (Exception e) {
-            System.out.println("Invalid date format! Using today's date.");
-            LocalDate today = LocalDate.now();
-            new_order.setOrderDate(today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+ boolean validDate = false;
+        String formattedDate = "";
+        
+        while (!validDate) {
+            try {
+                System.out.println("Enter order date (dd/MM/yyyy):");
+                String orderDateInput = input.next();
+                
+                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                
+                LocalDate date = LocalDate.parse(orderDateInput, inputFormatter);
+                formattedDate = date.format(outputFormatter);
+                
+                validDate = true; // if Date is valid, exit loop
+                System.out.println("Order date set to: " + formattedDate);
+                
+            } catch (Exception e) {
+                System.out.println("Invalid date format! Please use dd/MM/yyyy format");
+                System.out.println("Please try again.");
+            }
         }
       
         System.out.println("Enter status (pending, shipped, delivered, cancelled)....");
