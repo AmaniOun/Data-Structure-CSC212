@@ -2,11 +2,11 @@ package project;
  
 
 public class Review {
-    int reviewId;
-    int productID;
-    int customerID;
-    int rating;
-    String comment;
+    private int reviewId;
+    private int productID;
+    private int customerID;
+    private int rating;
+    private String comment;
 
     public Review() {
         this.reviewId = 0;
