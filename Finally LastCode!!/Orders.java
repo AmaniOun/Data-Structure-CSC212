@@ -124,7 +124,7 @@ public class Orders {
      
       
     //Create Order 
-    public Orders createOrder(int customerId, LinkedList<Products> productsList) {
+     public Orders createOrder(int customerId, LinkedList<Products> productsList) {
         try {
             Orders newOrder = new Orders();
             int totalPrice = 0;
@@ -197,9 +197,21 @@ public class Orders {
             }
             
             newOrder.setOrderDate(formattedDate);
+             String status;
+            boolean validStatus = false;
+            do {
+                System.out.println("Enter status (pending, shipped, delivered, cancelled):");
+                status = input.next().trim().toLowerCase();
+                
+                if (status.equals("pending") || status.equals("shipped") || 
+                    status.equals("delivered") || status.equals("cancelled")) {
+                    validStatus = true;
+                } else {
+                    System.out.println("Invalid status! Please enter one of: pending, shipped, delivered, cancelled");
+                }
+            } while (!validStatus);
             
-            System.out.println("Enter status (pending, shipped, delivered, cancelled)....");
-            newOrder.setStatus(input.next());
+            newOrder.setStatus(status);
             
             orders.insert(newOrder);
             
@@ -211,6 +223,7 @@ public class Orders {
             return null;
         }
     }
+
     
      
     private boolean checkProductExists(int pid, LinkedList<Products> productsList) {
@@ -286,11 +299,32 @@ public class Orders {
             }
 
             System.out.println("Current status: " + current.getStatus());
-            System.out.print("Enter new status (pending / shipped / delivered / cancelled): ");
-            String newStatus = input.next();
+            String[] validStatuses = {"pending", "shipped", "delivered", "cancelled"};
+            
+            String newStatus;
+            
+            while (true) {
+    System.out.print("Enter new status (pending / shipped / delivered / cancelled): ");
+    newStatus = input.next().toLowerCase();
 
-            current.setStatus(newStatus);
-            System.out.println("Order " + orderID + " status updated to " + newStatus);
+    boolean isValid = false;
+
+    for (String status : validStatuses) {
+        if (newStatus.equalsIgnoreCase(status)) {
+            isValid = true;
+            break;
+        }
+    }
+
+    if (isValid) {
+        break; 
+    } else {
+        System.out.println("Invalid status. Please enter a valid status.");
+    }
+    }
+
+     current.setStatus(newStatus);
+     System.out.println("Order " + orderID + " status updated to " + newStatus);
             return true;
         }
 
@@ -302,6 +336,7 @@ public class Orders {
         return false;
     }
 }
+
 
     public static Orders searchById(int id) {
         try {
