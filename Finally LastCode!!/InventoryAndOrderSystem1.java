@@ -623,35 +623,41 @@ public static void AddNewReview()
 }
 
     //top 3 products
-    public static void top3Products()
-    {
-        try {
-        PQ_LinkedList<Products> top3 = new PQ_LinkedList<Products> ();
+  public static void top3Products()
+{
+    try {
+        PQ_LinkedList<Products> top3 = new PQ_LinkedList<Products>();
         
         if (!products.empty())
         {
             products.findFirst();
             for (int i = 0 ; i < products.size() ; i++)
             {
-                
                 Products p = products.retrieve();
-                float AVGrating = Reviews.AVG_Rating (p.getProductId());
+                float AVGrating = Reviews.AVG_Rating(p.getProductId());
                 top3.enqueue(p, AVGrating);
                 
-                products.findNext();
+                if (!products.last())
+                    products.findNext();
             }
-            
         }
         
         System.out.println("top 3 products by average rating from most to least.");
-        for ( int j = 1 ; j <= 3 && top3.length() > 0 ; j++)
+        
+        if (top3.length() == 0) {
+            System.out.println("No products available to display.");
+            return;
+        }
+        
+        for (int j = 1; j <= 3 && top3.length() > 0; j++)
         {
             PQ_Element<Products> top = top3.serve();
             System.out.println("Product " + j + "  " + top.data.getProductId() 
-                    + " " + top.data.getProductName() + " AVG rate (" + top.priority + ")" );
+                    + " " + top.data.getProductName() + " AVG rate (" + top.priority + ")");
         }
     } catch (Exception e) {
         System.out.println("An error occurred while retrieving the top 3 products. Please try again.");
+        e.printStackTrace(); 
     }
 }
     
